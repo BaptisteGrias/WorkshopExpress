@@ -4,6 +4,12 @@ const connection = require('./Config');
 const PORT = process.env.PORT || 8000;
 const app = express();
 
+const homeRouter = require('./routes/home');
+const productsRouter = require('./routes/products');
+
+app.use('/home', homeRouter);
+app.use('/products', productsRouter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

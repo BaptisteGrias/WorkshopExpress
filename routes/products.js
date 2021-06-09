@@ -1,13 +1,8 @@
 const express = require('express');
 const connection = require('../Config');
 const router = express.Router();
-const homeRouter = require('./routes/home');
-const productsRouter = require('./routes/products');
 
-router.use('/home', homeRouter);
-router.use('/products', productsRouter);
-
-router.get('/products', (req, res) => {
+router.get('/', (req, res) => {
   connection
     .promise()
     .query('SELECT * FROM products')
@@ -20,7 +15,7 @@ router.get('/products', (req, res) => {
     });
 });
 
-router.get('/products/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   const { id } = req.params;
   connection
     .promise()
@@ -36,7 +31,6 @@ router.get('/products/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const { name, price } = req.body;
-  console.log(req.body);
   const sql = `INSERT INTO products(name, price) Values (?, ?)`;
   connection.query(sql, [name, price], (err, result) => {
     if (err) {
@@ -47,11 +41,10 @@ router.post('/', (req, res) => {
   });
 });
 
-router.put('./id', (req, res) => {
+router.put('/:id', (req, res) => {
   const { id } = req.params;
-  const { name, price } = req.body;
-  const sql = `UPDATE products SET (?, ?) WHERE id=? `;
-  connection.query(sql, [name, price, id], (err, results) => {
+  const sql = `UPDATE products SET ? WHERE id=? `;
+  connection.query(sql, [req.body, id], (err, results) => {
     if (err) {
       res.status(500).json({ error: 'error query database' });
     } else {
@@ -60,7 +53,7 @@ router.put('./id', (req, res) => {
   });
 });
 
-router.delete('/products/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   connection
     .promise()
     .query('DELETE FROM products WHERE id = ?', [req.params.id])
